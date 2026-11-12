@@ -1,0 +1,39 @@
+# Instellingen van de clipper. Bronnen en campagnetekst stel je in via Telegram
+# (/bron en /tekst), dus dit bestand hoef je normaal niet aan te raken.
+
+brand: "Founders Cutz"
+timezone: "Europe/Amsterdam"
+
+# Hoeveel clips je per nacht ter controle krijgt.
+clips_per_day: 4
+
+# Tijden waarop goedgekeurde clips worden geplaatst (lokale tijd).
+post_times: ["12:00", "17:00", "20:00"]
+
+# Lengte van een clip in seconden.
+clip_seconds:
+  min: 20
+  max: 45
+
+# Van lange video's wordt alleen het eerste deel verwerkt (minuten).
+max_source_minutes: 75
+
+# Spraakherkenning. "base.en" is snel, "small.en" is nauwkeuriger maar trager.
+whisper_model: "base.en"
+
+# Vaste tekst onder elke post. De verplichte campagnetekst (/tekst) komt ervoor.
+caption_suffix: "#business #entrepreneur #podcast #shorts"
+
+# YouTube-categorie: 22 = People & Blogs, 27 = Education.
+youtube_category: "22"
+
+# Gratis AI-modellen die de beste momenten kiezen (worden op volgorde geprobeerd).
+gemini_models: ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.5-flash"]
+
+# Accentkleur van het actieve woord in de ondertitels (RGB hex).
+accent_color: "C6FF3D"
+
+# Wordt ingevuld door de installatie: de Buffer-kanalen waarop geplaatst wordt.
+channels:
+  - {id: "6af63f1c62b70b94b00fee61", service: "youtube"}
+  - {id: "6af63ef462b70b94b00fed26", service: "instagram"}
