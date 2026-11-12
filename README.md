@@ -5,6 +5,11 @@ Telegram ter controle en plaatst wat jij goedkeurt op YouTube Shorts en Instagra
 
 ## Hoe het werkt
 
+0. **Campagne kiezen (automatisch):** de bot leest het openbare campagne-overzicht van Content Rewards,
+   kiest de beste clipcampagne (Engels, YouTube of Instagram, geen aanvraag nodig, genoeg budget, geen
+   gokken of crypto), zet de bronlink en de verplichte tags klaar en meldt het in Telegram. Jij meldt je
+   één keer aan via de link. Raakt het budget op, dan stapt de bot zelf over op de volgende.
+
 1. **Elke nacht (GitHub Actions):** nieuwste video van je bron ophalen, spraak omzetten naar tekst,
    de sterkste momenten kiezen, knippen naar 9:16 met hooktitel en ondertitels.
 2. **Elke ochtend (Telegram):** je krijgt de clips met de knoppen Plaatsen en Weggooien.
@@ -24,7 +29,11 @@ De rest gaat vanzelf: repository aanmaken, sleutels opslaan, opslag aanzetten, e
 
 | Opdracht | Wat het doet |
 | --- | --- |
-| `/bron <link>` | Bron toevoegen: kanaal, playlist of video van je campagne |
+| `/zoek` | Nu de beste campagne zoeken en kiezen |
+| `/campagne` | Huidige campagne en alternatieven tonen |
+| `/kies <nummer>` | Een van de alternatieven kiezen |
+| `/auto aan` of `/auto uit` | Automatisch campagnes kiezen aan of uit |
+| `/bron <link>` | Zelf een bron toevoegen (zet automatisch kiezen uit) |
 | `/bronnen` | Alle bronnen tonen |
 | `/wisbron <nummer>` | Bron verwijderen |
 | `/tekst <tekst>` | Verplichte campagnetekst of tags onder elke post |

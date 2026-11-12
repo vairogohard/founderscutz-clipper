@@ -4,11 +4,15 @@ import traceback
 
 import requests
 
-from . import buffer_api, tg
+from . import buffer_api, campaigns, tg
 from .common import fmt_local, load_config, load_state, next_slot, pages_base_url, save_state
 
 HELP = ("Opdrachten:\n"
-        "/bron <link>  bron toevoegen (kanaal, playlist of video van je campagne)\n"
+        "/zoek  nu de beste campagne zoeken\n"
+        "/campagne  huidige campagne en alternatieven tonen\n"
+        "/kies <nummer>  een van de alternatieven kiezen\n"
+        "/auto aan|uit  automatisch campagnes kiezen\n"
+        "/bron <link>  zelf een bron toevoegen (zet automatisch kiezen uit)\n"
         "/bronnen  alle bronnen tonen\n"
         "/wisbron <nummer>  bron verwijderen\n"
         "/tekst <tekst>  verplichte campagnetekst of tags voor onder elke post\n"
@@ -85,14 +89,34 @@ def handle_message(msg, state, cfg):
     text = (msg.get("text") or "").strip()
     cmd, _, arg = text.partition(" ")
     cmd, arg = cmd.lower().split("@")[0], arg.strip()
-    if cmd == "/bron" and arg.startswith("http"):
+    if cmd == "/zoek":
+        tg.send_message("Ik ga zoeken...")
+        if not campaigns.ensure_campaign(state, cfg, force=True):
+            pass                      # de reden is al in Telegram gemeld
+    elif cmd == "/campagne":
+        cur = state.get("campaign")
+        if not cur:
+            tg.send_message("Nog geen campagne gekozen. Stuur /zoek.")
+        else:
+            lines = [f"Nu: {campaigns.line(cur)}", cur["url"], "Bronnen: " + (", ".join(state["sources"]) or "geen")]
+            lines += [f"{i}. {campaigns.line(o)}" for i, o in enumerate(state.get("campaign_options", []), 1)]
+            tg.send_message("\n".join(lines))
+    elif cmd == "/kies" and arg.isdigit() and 1 <= int(arg) <= len(state.get("campaign_options", [])):
+        opts = state["campaign_options"]
+        campaigns.apply_campaign(state, cfg, opts[int(arg) - 1], opts)
+    elif cmd == "/auto":
+        state["auto_campaign"] = arg.lower() != "uit"
+        tg.send_message("Automatisch campagnes kiezen staat " + ("aan." if state["auto_campaign"] else "uit."))
+    elif cmd == "/bron" and arg.startswith("http"):
         if arg not in state["sources"]:
             state["sources"].append(arg)
-        tg.send_message(f"Bron toegevoegd. Je hebt nu {len(state['sources'])} bron(nen). "
+        state["auto_campaign"] = False
+        tg.send_message(f"Bron toegevoegd. Je hebt nu {len(state['sources'])} bron(nen). Automatisch "
+                        "campagnes kiezen staat nu uit; zet het weer aan met /auto aan. "
                         "De eerste clips komen na de volgende nachtelijke ronde.")
     elif cmd == "/bronnen":
         lines = [f"{i}. {s}" for i, s in enumerate(state["sources"], 1)]
-        tg.send_message("\n".join(lines) or "Nog geen bronnen. Voeg er een toe met /bron <link>")
+        tg.send_message("\n".join(lines) or "Nog geen bronnen. Stuur /zoek of /bron <link>")
     elif cmd == "/wisbron" and arg.isdigit() and 1 <= int(arg) <= len(state["sources"]):
         removed = state["sources"].pop(int(arg) - 1)
         tg.send_message(f"Verwijderd: {removed}")
@@ -103,7 +127,10 @@ def handle_message(msg, state, cfg):
         clips = state["clips"].values()
         pending = sum(1 for c in clips if c["status"] == "pending")
         sched = sorted((c["due"], c["title"]) for c in clips if c["status"] == "scheduled")
-        lines = [f"Wacht op jouw keuze: {pending}", f"Bronnen: {len(state['sources'])}", "", "Laatst ingepland:"]
+        cur = state.get("campaign")
+        lines = [f"Campagne: {cur['title'] if cur else 'nog geen'}",
+                 f"Wacht op jouw keuze: {pending}", f"Bronnen: {len(state['sources'])}", "",
+                 "Laatst ingepland:"]
         lines += [f"{fmt_local(d, cfg)}  {t}" for d, t in sched[-6:]] or ["nog niets"]
         tg.send_message("\n".join(lines))
     else:

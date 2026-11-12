@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from . import pick, render, sources, tg, transcribe
+from . import campaigns, pick, render, sources, tg, transcribe
 from .common import ROOT, load_config, load_state, now_utc, save_state
 
 WORK = ROOT / "work"
@@ -14,9 +14,14 @@ OUT = ROOT / "out" / "clips"
 
 def main():
     cfg, state = load_config(), load_state()
+    try:
+        if campaigns.ensure_campaign(state, cfg):
+            save_state(state)
+    except Exception:  # noqa: BLE001 - zonder nieuwe campagne gaan we gewoon door
+        traceback.print_exc()
     srcs = state.get("sources") or []
     if not srcs:
-        tg.send_message("Er is nog geen bron ingesteld. Stuur mij: /bron <link naar het kanaal, "
+        tg.send_message("Er is nog geen bron voor de clips. Stuur mij: /bron <link naar het kanaal, "
                         "de playlist of de video van je campagne>")
         return 0
 

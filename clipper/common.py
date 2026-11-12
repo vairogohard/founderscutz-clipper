@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parent.parent
 STATE_FILE = ROOT / "state" / "state.json"
 CONFIG_FILE = ROOT / "config.yml"
 
-DEFAULT_STATE = {"tg_offset": 0, "processed": [], "sources": [], "campaign_text": "", "clips": {}}
+DEFAULT_STATE = {"tg_offset": 0, "processed": [], "sources": [], "campaign_text": "", "clips": {},
+                 "campaign": None, "campaign_options": [], "auto_campaign": True}
 
 
 def load_config():
