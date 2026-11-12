@@ -1,97 +1,61 @@
 {
-  "tg_offset": 277151610,
+  "tg_offset": 277151611,
   "processed": [],
-  "sources": [],
+  "sources": [
+    "https://www.youtube.com/watch?v=5sfuMvtxiLg",
+    "https://www.youtube.com/watch?v=ysPOGQmqm-E",
+    "https://www.youtube.com/watch?v=QxzpjqKXH-A",
+    "https://www.youtube.com/watch?v=FTEt7LEyKlM",
+    "https://www.youtube.com/watch?v=-QUKueAVF48",
+    "https://www.youtube.com/watch?v=-ofvCW3kzK8"
+  ],
   "campaign_text": "",
   "clips": {},
   "campaign": {
-    "id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-    "title": "Boxabl Official Clipping",
-    "url": "https://contentrewards.com/discover/188c3e39-7850-4896-94df-e7a5be0cfec3",
-    "cpm": null,
-    "budget_left": 39163.64,
+    "id": "5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
+    "title": "Stream House LA Clipping| $4k Budget",
+    "url": "https://contentrewards.com/discover/5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
+    "cpm": 2.0,
+    "budget_left": 2930.5299999999997,
     "platforms": [
       "instagram",
       "tiktok",
-      "x",
       "youtube"
     ],
-    "chosen": "2026-11-12T23:38:31Z"
+    "chosen": "2026-11-12T23:46:31Z"
   },
   "campaign_options": [
     {
-      "id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "title": "Boxabl Official Clipping",
-      "url": "https://contentrewards.com/discover/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "cpm": null,
-      "budget_total": 62081.82,
-      "budget_left": 39163.64,
-      "progress": 26.96,
-      "creators": null,
+      "id": "5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
+      "title": "Stream House LA Clipping| $4k Budget",
+      "url": "https://contentrewards.com/discover/5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
+      "cpm": 2.0,
+      "budget_total": 4000.0,
+      "budget_left": 2930.5299999999997,
+      "progress": 26.73,
+      "creators": 56.0,
       "platforms": [
         "instagram",
         "tiktok",
-        "x",
         "youtube"
       ],
-      "type": "cpm",
-      "status": "",
-      "category": "Business",
-      "requires_application": false,
-      "description": "Boxabl makes foldable homes. They have a 20x20 foot home called the Casita that ships flat and unfolds on-site. Cool product, cool factory, cool transformation. You're clipping from a list of pre-approved YouTube videos. The footage includes Boxabl factory tours, walkthroughs from major creators like Enes Yilmazer (15M views) and Orkun Isitmak (16.3M views), Elon Musk, Airrack, Faze Rug, and content featuring big-name talent who've worked with Boxabl. Your job is to clip the best moments and post to short-form (TikTok, Instagram Reels, YouTube Shorts, and X) to drive views and brand awareness. UGC IS ALLOWED",
-      "youtube": [],
-      "links": [
-        "https://crusercontent.com/organizations/07f11898-4a1a-5b98-a340-ca5b8b7d83ba/logo/07f11898-4a1a-5b98-a340-ca5b8b7d83ba.f54412cc33.png",
-        "https://crusercontent.com/07f11898-4a1a-5b98-a340-ca5b8b7d83ba/campaigns/thumbnails/188c3e39-7850-4896-94df-e7a5be0cfec3.jpg"
-      ]
-    },
-    {
-      "id": "a1cefc3b-4533-438f-8e70-a7299550f1cf",
-      "title": "Call of Duty - MW4 DMZ Intel Briefing Clipping",
-      "url": "https://contentrewards.com/discover/a1cefc3b-4533-438f-8e70-a7299550f1cf",
-      "cpm": null,
-      "budget_total": 26992.62,
-      "budget_left": 23985.239999999998,
-      "progress": 10.02,
-      "creators": null,
-      "platforms": [
-        "instagram",
-        "tiktok"
-      ],
-      "type": "cpm",
+      "type": "",
       "status": "",
       "category": "Entertainment",
       "requires_application": false,
-      "description": "Clip the DMZ Intel Briefing video from the official content folder.\nShow the new DMZ content in Modern Warfare 4 Season 1.\nPost to TikTok and Instagram Reels.\n",
+      "description": "Clip for Stream House LA and post viral moments across Tiktok, Instagram and YT shorts and get paid ",
       "youtube": [],
       "links": [
-        "https://crusercontent.com/organizations/a581a2a2-b79c-5f3c-b374-bab179ed49dc/logo/a581a2a2-b79c-5f3c-b374-bab179ed49dc.1e1267ba82.jpg",
-        "https://crusercontent.com/a581a2a2-b79c-5f3c-b374-bab179ed49dc/campaigns/thumbnails/53962c59-39c5-4aa1-8c42-ed65e6d5301a.webp"
-      ]
-    },
-    {
-      "id": "791ad52c-a938-48b3-8f7e-f43ca10b110c",
-      "title": "ChainsFR: Como Se Dice Clipping",
-      "url": "https://contentrewards.com/discover/791ad52c-a938-48b3-8f7e-f43ca10b110c",
-      "cpm": null,
-      "budget_total": 10792.14,
-      "budget_left": 10334.279999999999,
-      "progress": 4.06,
-      "creators": null,
-      "platforms": [
-        "instagram",
-        "tiktok",
-        "youtube"
+        "https://crusercontent.com/organizations/c8ebd942-fbb1-51c3-91c7-09ed9f9742af/logo/c8ebd942-fbb1-51c3-91c7-09ed9f9742af.871ffb66f8.jpg",
+        "https://crusercontent.com/c8ebd942-fbb1-51c3-91c7-09ed9f9742af/campaigns/thumbnails/be69e906-5637-40d9-bd34-5810e901d3c5.webp"
       ],
-      "type": "cpm",
-      "status": "",
-      "category": "YouTuber",
-      "requires_application": false,
-      "description": "Clip ChainsFR's new song \"Como Se Dice\" into funny, entertaining short-form videos that highlight how catchy and genuinely fire the track is. Use viral moments, creative edits, and humor to get people talking, sharing, and realizing this song is actually a banger. Let's make it blow up! ",
-      "youtube": [],
-      "links": [
-        "https://crusercontent.com/organizations/43893b4f-434d-549b-9037-4f1c62984ff2/logo/b467c12e-19de-4ec5-a9c0-a6505c552ace.webp",
-        "https://crusercontent.com/43893b4f-434d-549b-9037-4f1c62984ff2/campaigns/thumbnails/3b65ba59-2c1f-46d8-80e2-aee26927beda.webp"
+      "sources": [
+        "https://www.youtube.com/watch?v=5sfuMvtxiLg",
+        "https://www.youtube.com/watch?v=ysPOGQmqm-E",
+        "https://www.youtube.com/watch?v=QxzpjqKXH-A",
+        "https://www.youtube.com/watch?v=FTEt7LEyKlM",
+        "https://www.youtube.com/watch?v=-QUKueAVF48",
+        "https://www.youtube.com/watch?v=-ofvCW3kzK8"
       ]
     }
   ],
