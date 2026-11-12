@@ -100,8 +100,12 @@ def handle_message(msg, state, cfg):
             raw = campaigns.raw_campaigns(html)
             cid = (state.get("campaign") or {}).get("id")
             d = raw.get(cid) or next(iter(raw.values()), None)
-            tg.send_message("Velden van de campagne:\n" + campaigns.describe_fields(d) if d
-                            else "Geen campagnes gevonden. " + campaigns.diagnose(html))
+            if not d:
+                tg.send_message("Geen campagnes gevonden. " + campaigns.diagnose(html))
+            else:
+                tg.send_message("Velden van de campagne:\n" + campaigns.describe_fields(d))
+                site = frozenset(u for _, u in campaigns.page_links(html))
+                tg.send_message(campaigns.describe_sources(campaigns.normalize(d), site))
         except Exception as e:  # noqa: BLE001
             tg.send_message(f"Mislukt: {str(e)[:300]}")
     elif cmd == "/campagne":

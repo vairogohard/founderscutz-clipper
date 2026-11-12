@@ -78,7 +78,7 @@ def flatten(d, prefix="", depth=0, out=None):
     return out
 
 
-NUM_RX = re.compile(r"^\s*\$?\s*[\d,]+(\.\d+)?\s*(usd)?\s*$", re.I)
+NUM_RX = re.compile(r"^\s*\$*\s*([\d,]+(?:\.\d+)?)\s*([km])?\s*(?:usd)?\s*$", re.I)
 
 
 def num(v):
@@ -86,8 +86,30 @@ def num(v):
         return None
     if isinstance(v, (int, float)):
         return float(v)
-    if isinstance(v, str) and NUM_RX.match(v):
-        return float(re.sub(r"[^\d.]", "", v.replace(",", "")))
+    if isinstance(v, str):
+        m = NUM_RX.match(v)
+        if m:
+            n = float(m.group(1).replace(",", ""))
+            return n * {"k": 1e3, "m": 1e6}.get((m.group(2) or "").lower(), 1)
+    return None
+
+
+# Veldnamen zoals Content Rewards ze gebruikt (gezien via /debug op 13 nov 2026).
+KNOWN = {
+    "cpm": ["ratePer1kRaw", "ratePer1k", "ratePer1kLabel", "payoutSortRaw"],
+    "total": ["budgetTotalRaw", "budgetTotal", "budgetTotalLabel"],
+    "spent": ["budgetSpentRaw", "budgetSpent", "budgetSpentLabel"],
+    "left": ["availableBudgetRaw", "availableBudget"],
+    "creators": ["creatorCountRaw", "creatorCount"],
+    "progress": ["progressPercentage"],
+}
+
+
+def known(d, field):
+    for k in KNOWN[field]:
+        n = num(d.get(k))
+        if n is not None:
+            return n
     return None
 
 
@@ -123,7 +145,7 @@ def platforms_of(flat):
 
 def creators_of(flat):
     for k, v in flat.items():
-        if re.search(r"creators|participants|clippers", k) and "max" not in k:
+        if re.search(r"creatorcount|creators|participants|clippers", k) and "max" not in k:
             if isinstance(v, list):
                 return float(len(v))
             n = num(v)
@@ -170,18 +192,28 @@ def normalize(d):
     title = find(flat, r"(^|\.)(title|name|campaignname)$", want="str")
     if not title:
         return None
-    cpm = find(flat, r"cpm|perthousand|per1k|per_1k|per1000|rewardrate|payoutrate|rateper|(^|\.)rate$|reward",
-               r"creator|success|engage|ratio|spent|budget|limit|total|max|min|paid|submission|viewcount|count|id$")
-    rates = payout_rates(d)
-    mine = [r for p, r in rates if p in ("youtube", "instagram")] or [r for _, r in rates]
-    if mine:
-        cpm = min(mine)
+    cpm = known(d, "cpm")
+    if cpm is None:
+        cpm = find(flat, r"cpm|perthousand|per1k|per_1k|per1000|rewardrate|payoutrate|rateper|(^|\.)rate$|reward",
+                   r"creator|success|engage|ratio|spent|budget|limit|total|max|min|paid|submission|viewcount|count|id$")
+        rates = payout_rates(d)
+        mine = [r for p, r in rates if p in ("youtube", "instagram")] or [r for _, r in rates]
+        if mine:
+            cpm = min(mine)
     if cpm is not None and cpm > 60:          # waarschijnlijk in centen
         cpm = cpm / 100 if cpm / 100 <= 60 else None
-    total = find(flat, r"budget|funded", r"spent|left|remain|used|paid|progress|pct|percent|burn|daily|per")
-    spent = find(flat, r"spent|paidout|used", r"rate|per|pct|percent|progress")
-    left = find(flat, r"left|remaining", r"day|time|runway")
-    prog = find(flat, r"progress|percent|pct")
+    total = known(d, "total")
+    if total is None:
+        total = find(flat, r"budget|funded", r"spent|left|remain|avail|used|paid|progress|pct|percent|burn|daily|per")
+    spent = known(d, "spent")
+    if spent is None:
+        spent = find(flat, r"spent|paidout|used", r"rate|per|pct|percent|progress")
+    left = known(d, "left")
+    if left is None:
+        left = find(flat, r"left|remaining|available", r"day|time|runway")
+    prog = known(d, "progress")
+    if prog is None:
+        prog = find(flat, r"progress|percent|pct")
     if prog is not None and prog <= 1:
         prog *= 100
     if left is None and total is not None and spent is not None:
@@ -200,12 +232,15 @@ def normalize(d):
     blob = json.dumps(d, ensure_ascii=False)
     urls = list(dict.fromkeys(u.rstrip(".,;") for u in URL_RX.findall(desc + " " + blob)))
     youtube = list(dict.fromkeys(u.rstrip(".,;") for u in YT_RX.findall(desc + " " + blob)))
-    ctype = (find(flat, r"(^|\.)(campaigntype|type|contenttype|kind)$", want="str") or "").lower()
+    ctype = (find(flat, r"(^|\.)(campaigntype|contenttype|kind)$", want="str")
+             or find(flat, r"(^|\.)type$", want="str") or "").lower()
+    if ctype in ("cpm", "pool", "perpost"):     # dat is de betaalvorm, niet het soort content
+        ctype = ""
     status = (find(flat, r"(^|\.)status$", want="str") or "").lower()
     return {
         "id": cid, "title": title, "url": f"{SITE}/discover/{cid}", "cpm": cpm,
         "budget_total": total, "budget_left": left, "progress": prog,
-        "creators": creators_of(flat), "platforms": sorted(platforms_of(flat)),
+        "creators": known(d, "creators") if known(d, "creators") is not None else creators_of(flat), "platforms": sorted(platforms_of(flat)),
         "type": ctype, "status": status,
         "category": find(flat, r"category", want="str") or "",
         "requires_application": find(flat, r"requiresapplication|applicationrequired|needsapproval|"
@@ -267,6 +302,112 @@ def describe_fields(d, limit=3300):
     lines.append(f"-> gelezen tarief: {c.get('cpm')}; YouTube-links: {c.get('youtube')}; "
                  f"andere links: {[u for u in c.get('links', []) if u not in c.get('youtube', [])][:4]}")
     return "\n".join(lines)[:limit]
+
+
+def describe_sources(c, site_links=frozenset()):
+    try:
+        html = fetch_text(detail_url(c))
+    except Exception as e:  # noqa: BLE001
+        return f"Campagnepagina niet te openen: {str(e)[:150]}"
+    links = [(k, u) for k, u in page_links(html) if u not in site_links]
+    srcs, _ = find_sources(c, site_links)
+    lines = [f"Campagnepagina: {len(html) // 1000} kB, {len(links)} links."]
+    lines += [f"{k}: {u[:90]}" for k, u in links[:25]]
+    lines.append(f"-> gevonden bronnen: {srcs[:5] or 'geen'}")
+    return "\n".join(lines)[:3300]
+
+
+# ---------- bronnen op de campagnepagina ----------
+
+STR_FIELD = re.compile(r'"([A-Za-z_][\w]*)"\s*:\s*"((?:[^"\\]|\\.)*)"')
+SKIP_KEY = re.compile(r"top|best|submission|earner|avatar|thumbnail|logo|image|banner|icon|profile|social|"
+                      r"footer|og|meta|preview|cover", re.I)
+DOC_RX = re.compile(r"https?://(?:docs\.google\.com/(?:document|spreadsheets)/d/[\w-]+|"
+                    r"[\w.-]*notion\.(?:site|so)/[^\s\"'<>\\)\]]+)", re.I)
+DRIVE_RX = re.compile(r"https?://drive\.google\.com/(?:drive/(?:u/\d+/)?folders/|file/d/)[\w-]+", re.I)
+
+
+def fetch_text(url):
+    r = requests.get(url, headers={"User-Agent": UA, "Accept-Language": "en"}, timeout=45)
+    r.raise_for_status()
+    return r.text
+
+
+def _unescape(text):
+    for a, b in (("\\u002F", "/"), ("\\u0026", "&"), ("\\u003d", "="), ("\\/", "/")):
+        text = text.replace(a, b)
+    return text
+
+
+def string_fields(html):
+    """Alle (sleutel, tekst)-paren uit de pagina, ook uit ingepakte Next.js-gegevens."""
+    variants = [html, html.replace('\\"', '"').replace("\\\\", "\\")]
+    out = []
+    for text in variants:
+        for m in STR_FIELD.finditer(text):
+            out.append((m.group(1), _unescape(m.group(2))))
+    return out
+
+
+def clean_url(u):
+    return u.rstrip(".,;:!?'\"")
+
+
+def youtube_ok(u):
+    return "/shorts/" not in u and "contentrewards" not in u.lower() and "whop" not in u.lower()
+
+
+def page_links(html):
+    """(sleutel, url) voor alle links op een pagina, behalve opmaak en clips van andere clippers."""
+    found = []
+    for key, val in string_fields(html):
+        if SKIP_KEY.search(key):
+            continue
+        for u in URL_RX.findall(val):
+            found.append((key, clean_url(u)))
+    return list(dict.fromkeys(found))
+
+
+def youtube_in_doc(url):
+    """Een gedeeld Google Doc, Sheet of Notion-pagina openen en de YouTube-links eruit halen."""
+    m = re.search(r"docs\.google\.com/(document|spreadsheets)/d/([\w-]+)", url)
+    if m:
+        kind, doc_id = m.groups()
+        fmt = "txt" if kind == "document" else "csv"
+        url = f"https://docs.google.com/{kind}/d/{doc_id}/export?format={fmt}"
+    try:
+        text = _unescape(fetch_text(url))
+    except Exception as e:  # noqa: BLE001 - niet openbaar of niet bereikbaar
+        print("Document niet te openen:", url, str(e)[:100])
+        return []
+    return [clean_url(u) for u in YT_RX.findall(text) if youtube_ok(u)]
+
+
+def detail_url(c):
+    return f"{SITE}/discover/{c['id']}"
+
+
+def find_sources(c, site_links=frozenset()):
+    """Zoekt de bronvideo's van een campagne: eerst in de gegevens, dan op de campagnepagina en in
+    gelinkte documenten. Geeft (bronnen, tekst van de pagina) terug."""
+    sources = [u for u in c.get("youtube", []) if youtube_ok(u)]
+    text = c.get("description", "")
+    try:
+        html = fetch_text(detail_url(c))
+    except Exception as e:  # noqa: BLE001
+        print("Campagnepagina niet te openen:", c["title"], str(e)[:100])
+        return list(dict.fromkeys(sources)), text
+    links = [(k, u) for k, u in page_links(html) if u not in site_links]
+    for k, v in string_fields(html):
+        if re.search(r"description|rules|requirement|brief|guideline|instruction", k, re.I) and len(v) > len(text):
+            text = v
+    sources += [u for _, u in links if YT_RX.match(u) and youtube_ok(u)]
+    docs = list(dict.fromkeys(u for _, u in links if DOC_RX.match(u)))[:4]
+    for doc in docs:
+        sources += youtube_in_doc(doc)
+    if not sources:
+        sources += list(dict.fromkeys(u for _, u in links if DRIVE_RX.match(u)))[:3]
+    return list(dict.fromkeys(sources))[:12], text
 
 
 # ---------- kiezen ----------
@@ -334,7 +475,22 @@ def score(c):
 
 def rank(board, f, skip_ids=()):
     ok = [c for c in board if c["id"] not in skip_ids and eligible(c, f)[0]]
+    if not ok:      # niets over: iets ruimer zoeken (lager tarief, meer clippers)
+        loose = dict(f, min_cpm=min(f["min_cpm"], 0.5), max_creators=max(f["max_creators"], 1500))
+        ok = [c for c in board if c["id"] not in skip_ids and eligible(c, loose)[0]]
     return sorted(ok, key=score, reverse=True)
+
+
+def with_sources(ranked, site_links, limit=10):
+    """De beste campagnes waarvan de bot de bron zelf kan vinden, in volgorde."""
+    good = []
+    for c in ranked[:limit]:
+        srcs, text = find_sources(c, site_links)
+        if srcs:
+            good.append(dict(c, sources=srcs, description=text[:3000]))
+        if len(good) >= 3:
+            break
+    return good
 
 
 # ---------- regels van de campagne ----------
@@ -382,8 +538,11 @@ def line(c):
 
 
 def apply_campaign(state, cfg, c, options=None, notify=True):
+    if not c.get("sources"):
+        srcs, text = find_sources(c)
+        c = dict(c, sources=srcs, description=text[:3000])
     rules = extract_rules(c.get("description", ""), cfg)
-    sources = c["youtube"][:3]
+    sources = c["sources"][:6]
     state["campaign"] = {"id": c["id"], "title": c["title"], "url": c["url"], "cpm": c["cpm"],
                          "budget_left": c["budget_left"], "platforms": c["platforms"],
                          "chosen": now_utc().strftime("%Y-%m-%dT%H:%M:%SZ")}
@@ -398,8 +557,8 @@ def apply_campaign(state, cfg, c, options=None, notify=True):
            f"Platforms: {', '.join(c['platforms']) or 'onbekend'}", "",
            f"Doe dit één keer (1 minuut): open {c['url']} en meld je aan met je account. "
            "Clips plaats ik pas als jij ✅ tikt, dus doe dit eerst."]
-    msg.append("Bron voor de clips: " + (", ".join(sources) if sources else
-               "niet gevonden. Zoek op de campagnepagina het YouTube-kanaal en stuur /bron <link>"))
+    msg.append("Bronnen voor de clips (van de campagnepagina): " + (", ".join(sources) if sources else
+               "niet gevonden. Kies een andere campagne met /kies of /zoek."))
     if rules.get("required_text"):
         msg.append(f"Verplichte tekst onder elke post (opgeslagen): {rules['required_text']}")
     if rules.get("summary"):
@@ -438,12 +597,16 @@ def ensure_campaign(state, cfg, force=False):
                 cur["budget_left"] = fresh["budget_left"]
             return False            # campagne loopt nog (of staat buiten de eerste pagina): houden
     ranked = rank(board, f, skip_ids={cur["id"]} if (cur and not force) else ())
-    if not ranked:
+    site_links = frozenset(u for _, u in page_links(html))
+    good = with_sources(ranked, site_links)
+    if not good:
         if force or not cur:
-            tg.send_message(f"Ik zag {len(board)} campagnes maar er is er geen die aan je eisen voldoet "
-                            "(Engels, clipping, YouTube of Instagram, zonder aanvraag, genoeg budget, geen "
-                            "gokken of crypto).")
+            tg.send_message(f"Ik zag {len(board)} campagnes. {len(ranked)} voldoen aan je eisen (Engels, "
+                            "YouTube of Instagram, zonder aanvraag, genoeg budget, geen gokken of crypto), "
+                            "maar bij geen van de beste 10 kon ik de bronvideo's zelf vinden. Stuur /debug "
+                            "voor de details.")
         return False
+    ranked = good
     if cur and not force:
         tg.send_message(f"De campagne '{cur['title']}' is bijna of helemaal op. Ik ga over naar een nieuwe.")
     apply_campaign(state, cfg, ranked[0], ranked[:3])
