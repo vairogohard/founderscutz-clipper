@@ -132,6 +132,34 @@ def creators_of(flat):
     return None
 
 
+RATE_KEY = re.compile(r"rate|cpm|thousand|1k|1000|reward|payout|price|amount", re.I)
+RATE_BAD = re.compile(r"min|max|cap|limit|submission|total|budget|count|paid|spent|viewcount", re.I)
+
+
+def payout_rates(d):
+    """Tarieven per platform uit lijsten zoals payouts: [{platform, rate, ...}]."""
+    out = []
+
+    def scan(o, depth=0):
+        for k, v in o.items():
+            if isinstance(v, list) and v and all(isinstance(i, dict) for i in v) \
+                    and re.search(r"payout|rate|reward|platform|cpm", k, re.I):
+                for item in v:
+                    plat = next((str(item[x]).lower() for x in ("platform", "name", "type")
+                                 if isinstance(item.get(x), str)), "")
+                    for kk, vv in item.items():
+                        if RATE_KEY.search(kk) and not RATE_BAD.search(kk):
+                            n = num(vv)
+                            if n is not None:
+                                out.append((plat, n))
+                                break
+            elif isinstance(v, dict) and depth < 2:
+                scan(v, depth + 1)
+
+    scan(d)
+    return out
+
+
 def normalize(d):
     """Maakt van een stukje JSON een campagne, of None als het geen campagne lijkt."""
     cid = next((d[k] for k in ("id", "campaignId", "campaign_id", "uuid")
@@ -144,6 +172,10 @@ def normalize(d):
         return None
     cpm = find(flat, r"cpm|perthousand|per1k|per_1k|per1000|rewardrate|payoutrate|rateper|(^|\.)rate$|reward",
                r"creator|success|engage|ratio|spent|budget|limit|total|max|min|paid|submission|viewcount|count|id$")
+    rates = payout_rates(d)
+    mine = [r for p, r in rates if p in ("youtube", "instagram")] or [r for _, r in rates]
+    if mine:
+        cpm = min(mine)
     if cpm is not None and cpm > 60:          # waarschijnlijk in centen
         cpm = cpm / 100 if cpm / 100 <= 60 else None
     total = find(flat, r"budget|funded", r"spent|left|remain|used|paid|progress|pct|percent|burn|daily|per")
@@ -201,6 +233,40 @@ def diagnose(html):
     keys = ", ".join(sorted(sample)[:25]) if sample else "-"
     return (f"pagina {len(html) // 1000} kB, {len(blobs)} JSON-blokken, {len(cands)} mogelijke "
             f"campagnes. Voorbeeldvelden: {keys}")
+
+
+def raw_campaigns(html):
+    found = {}
+    for blob in json_blobs(html):
+        for d in walk(blob):
+            c = normalize(d) if isinstance(d, dict) else None
+            if c and (c["id"] not in found or len(d) > len(found[c["id"]])):
+                found[c["id"]] = d
+    return found
+
+
+def describe_fields(d, limit=3300):
+    """Korte lijst van velden en voorbeeldwaarden, om de lezer te kunnen afstellen."""
+    lines = []
+
+    def show(prefix, o, depth):
+        for k, v in o.items():
+            key = f"{prefix}{k}"
+            if isinstance(v, dict) and depth < 2:
+                show(key + ".", v, depth + 1)
+            elif isinstance(v, list):
+                if v and isinstance(v[0], dict):
+                    lines.append(f"{key}: lijst van {len(v)}, eerste: " + json.dumps(v[0], ensure_ascii=False)[:170])
+                else:
+                    lines.append(f"{key}: lijst van {len(v)}")
+            else:
+                lines.append(f"{key}: {str(v)[:45]}")
+
+    show("", d, 0)
+    c = normalize(d) or {}
+    lines.append(f"-> gelezen tarief: {c.get('cpm')}; YouTube-links: {c.get('youtube')}; "
+                 f"andere links: {[u for u in c.get('links', []) if u not in c.get('youtube', [])][:4]}")
+    return "\n".join(lines)[:limit]
 
 
 # ---------- kiezen ----------
@@ -371,7 +437,7 @@ def ensure_campaign(state, cfg, force=False):
             if fresh:
                 cur["budget_left"] = fresh["budget_left"]
             return False            # campagne loopt nog (of staat buiten de eerste pagina): houden
-    ranked = rank(board, f, skip_ids={cur["id"]} if cur else ())
+    ranked = rank(board, f, skip_ids={cur["id"]} if (cur and not force) else ())
     if not ranked:
         if force or not cur:
             tg.send_message(f"Ik zag {len(board)} campagnes maar er is er geen die aan je eisen voldoet "

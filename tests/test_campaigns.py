@@ -69,6 +69,17 @@ assert b2[0]["platforms"] == ["x", "youtube"] and b2[0]["youtube"] == ["https://
 bad = "<html><script>self.__next_f.push([1,\"1:{\\\"id\\\":\\\"" + uid(30) + "\\\",\\\"foo\\\":1}\\n\"])</script></html>"
 assert campaigns.parse_board(bad) == [] and "mogelijke campagnes" in campaigns.diagnose(bad)
 
+# Tarieven in een lijst per platform (zoals Content Rewards waarschijnlijk doet)
+pay = camp(40, "Payout List Podcast", description="Clip our podcast. https://youtube.com/@pl")
+for k in ("rewardPerThousandViews",):
+    del pay[k]
+pay["payouts"] = [{"platform": "tiktok", "rate": 4.0, "minPayout": 10, "maxPayoutPerSubmission": 200},
+                  {"platform": "youtube", "rate": 1.8, "minPayout": 10, "maxPayoutPerSubmission": 200},
+                  {"platform": "instagram", "rate": 2.2, "minPayout": 10}]
+pc = campaigns.parse_board('<script type="application/json">' + json.dumps({"c": [pay]}) + "</script>")[0]
+assert pc["cpm"] == 1.8, pc["cpm"]                         # laagste van YouTube en Instagram
+assert "gelezen tarief: 1.8" in campaigns.describe_fields(pay) and "payouts" in campaigns.describe_fields(pay)
+
 # --- ensure_campaign ---
 sent = []
 tg.send_message = lambda t: sent.append(t)
@@ -103,4 +114,11 @@ page["html"] = "<html></html>"
 n = len(sent)
 assert campaigns.ensure_campaign(state, cfg, force=True) is False and len(sent) == n + 1
 assert "veranderd" in sent[-1]
+# /zoek mag dezelfde campagne weer kiezen als hij de beste blijft
+page["html"] = html1
+state["auto_campaign"] = True
+state["campaign"] = None
+campaigns.ensure_campaign(state, cfg)
+best = state["campaign"]["id"]
+assert campaigns.ensure_campaign(state, cfg, force=True) is True and state["campaign"]["id"] == best
 print("alle tests ok")

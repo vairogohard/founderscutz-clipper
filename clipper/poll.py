@@ -9,6 +9,7 @@ from .common import fmt_local, load_config, load_state, next_slot, pages_base_ur
 
 HELP = ("Opdrachten:\n"
         "/zoek  nu de beste campagne zoeken\n"
+        "/debug  velden van de gekozen campagne tonen (voor Claude)\n"
         "/campagne  huidige campagne en alternatieven tonen\n"
         "/kies <nummer>  een van de alternatieven kiezen\n"
         "/auto aan|uit  automatisch campagnes kiezen\n"
@@ -93,6 +94,16 @@ def handle_message(msg, state, cfg):
         tg.send_message("Ik ga zoeken...")
         if not campaigns.ensure_campaign(state, cfg, force=True):
             pass                      # de reden is al in Telegram gemeld
+    elif cmd == "/debug":
+        try:
+            html = campaigns.fetch_html()
+            raw = campaigns.raw_campaigns(html)
+            cid = (state.get("campaign") or {}).get("id")
+            d = raw.get(cid) or next(iter(raw.values()), None)
+            tg.send_message("Velden van de campagne:\n" + campaigns.describe_fields(d) if d
+                            else "Geen campagnes gevonden. " + campaigns.diagnose(html))
+        except Exception as e:  # noqa: BLE001
+            tg.send_message(f"Mislukt: {str(e)[:300]}")
     elif cmd == "/campagne":
         cur = state.get("campaign")
         if not cur:
