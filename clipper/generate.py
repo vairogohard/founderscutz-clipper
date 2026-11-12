@@ -1,4 +1,5 @@
 """Nachtelijke taak: nieuwe bronvideo ophalen, clips maken en ter controle naar Telegram sturen."""
+import os
 import shutil
 import sys
 import traceback
@@ -26,6 +27,17 @@ def main():
         return 0
 
     video, errors = sources.pick_new_video(srcs, set(state["processed"]))
+    if video is None and errors and all(sources.is_cookie_error(e) for e in errors):
+        has = bool(os.environ.get("YTDLP_COOKIES"))
+        tg.send_message(
+            ("YouTube weigert de download: je YouTube-cookies zijn verlopen." if has else
+             "YouTube weigert downloads vanaf GitHub zonder YouTube-cookies.") +
+            "\n\nVernieuwen (2 minuten):\n"
+            "1. Open Chrome in een incognitovenster en log in op YouTube met je losse Google-account.\n"
+            "2. Ga in hetzelfde tabblad naar youtube.com/robots.txt.\n"
+            "3. Exporteer de cookies met 'Get cookies.txt LOCALLY' en sluit het incognitovenster meteen.\n"
+            "4. Typ in de VS Code-terminal van je clipper: bash tools/cookies.sh en sleep het cookiebestand erin.")
+        return 0
     if video is None:
         msg = "Geen nieuwe video gevonden bij je bronnen, dus vandaag geen nieuwe clips."
         if errors:

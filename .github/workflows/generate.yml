@@ -29,12 +29,27 @@ jobs:
           cache: pip
       - name: ffmpeg installeren
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Deno installeren (YouTube vereist een JavaScript-programma)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: YouTube-cookies klaarzetten
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then
+            printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/cookies.txt"
+            echo "YTDLP_COOKIES=$RUNNER_TEMP/cookies.txt" >> "$GITHUB_ENV"
+            echo "Cookies klaargezet."
+          else
+            echo "Geen YT_COOKIES ingesteld."
+          fi
       - name: Spraakmodel bewaren tussen de rondes
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
           key: whisper-${{ hashFiles('config.yml') }}
-      - run: pip install -q -r requirements.txt
+      - run: pip install -q -U -r requirements.txt
       - name: Clips maken en naar Telegram sturen
         run: python -m clipper.generate
       - name: Clips online zetten

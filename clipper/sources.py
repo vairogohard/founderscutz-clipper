@@ -1,7 +1,23 @@
 """Bronvideo's vinden en downloaden (alleen materiaal van je campagne)."""
+import os
 from pathlib import Path
 
 import yt_dlp
+
+COOKIE_HINTS = ("sign in to confirm", "not a bot", "cookies", "login required")
+
+
+def base_opts():
+    """Gedeelde instellingen: YouTube-cookies (GitHub-secret YT_COOKIES) als die er zijn."""
+    opts = {"quiet": True, "no_warnings": False}
+    cookie_file = os.environ.get("YTDLP_COOKIES", "")
+    if cookie_file and Path(cookie_file).exists():
+        opts["cookiefile"] = cookie_file
+    return opts
+
+
+def is_cookie_error(text):
+    return any(h in str(text).lower() for h in COOKIE_HINTS)
 
 
 def _normalize(url):
@@ -15,7 +31,7 @@ def _normalize(url):
 
 def list_videos(url, limit=8):
     """Nieuwste video's van een kanaal, playlist of losse video."""
-    opts = {"quiet": True, "extract_flat": True, "playlistend": limit, "skip_download": True}
+    opts = dict(base_opts(), extract_flat=True, playlistend=limit, skip_download=True)
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(_normalize(url), download=False)
     entries = info.get("entries")
@@ -55,7 +71,7 @@ def download(video, workdir):
     workdir.mkdir(parents=True, exist_ok=True)
     out = workdir / "source.mp4"
     opts = {
-        "quiet": True,
+        **base_opts(),
         "noprogress": True,
         "outtmpl": str(workdir / "source.%(ext)s"),
         "format": "bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/b[height<=720]/b",
