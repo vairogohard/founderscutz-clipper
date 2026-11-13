@@ -1,6 +1,11 @@
 {
   "tg_offset": 277151612,
-  "processed": [],
+  "processed": [
+    "5sfuMvtxiLg",
+    "ysPOGQmqm-E",
+    "QxzpjqKXH-A",
+    "FTEt7LEyKlM"
+  ],
   "sources": [
     "https://www.youtube.com/watch?v=5sfuMvtxiLg",
     "https://www.youtube.com/watch?v=ysPOGQmqm-E",
@@ -10,13 +15,54 @@
     "https://www.youtube.com/watch?v=-ofvCW3kzK8"
   ],
   "campaign_text": "",
-  "clips": {},
+  "clips": {
+    "261113-5sfuMvtx-1": {
+      "status": "pending",
+      "title": "When You Start Treating Them How They Treat You",
+      "caption": "When You Start Treating Them How They Treat You",
+      "file": "261113-5sfuMvtx-1.mp4",
+      "message_id": 33,
+      "source_title": "When You Start Treating Them How They Treat You🤡😭Watch the full episode 2 on CWETV",
+      "source_url": "https://www.youtube.com/watch?v=5sfuMvtxiLg",
+      "created": "2026-11-13T07:55:44Z"
+    },
+    "261113-ysPOGQmq-1": {
+      "status": "pending",
+      "title": "Michaela Crashes Out On K-Shiday For Stealing Her Mans",
+      "caption": "Michaela Crashes Out On K-Shiday For Stealing Her Mans",
+      "file": "261113-ysPOGQmq-1.mp4",
+      "message_id": 34,
+      "source_title": "Michaela Crashes Out On K-Shiday For Stealing Her Mans😳Watch Full Episode on CWETV",
+      "source_url": "https://www.youtube.com/watch?v=ysPOGQmqm-E",
+      "created": "2026-11-13T07:56:08Z"
+    },
+    "261113-QxzpjqKX-1": {
+      "status": "pending",
+      "title": "How Your Friends Be Acting After Break Up W...",
+      "caption": "How Your Friends Be Acting After Break Up W...",
+      "file": "261113-QxzpjqKX-1.mp4",
+      "message_id": 35,
+      "source_title": "How Your Friends Be Acting After Break Up W Your Boo For The 1000 Time😂Watch the full ep. 2 on CWETV",
+      "source_url": "https://www.youtube.com/watch?v=QxzpjqKXH-A",
+      "created": "2026-11-13T07:56:26Z"
+    },
+    "261113-FTEt7LEy-1": {
+      "status": "pending",
+      "title": "That One Friend Who Overshares Way Too Much",
+      "caption": "That One Friend Who Overshares Way Too Much",
+      "file": "261113-FTEt7LEy-1.mp4",
+      "message_id": 36,
+      "source_title": "That One Friend Who Overshares Way Too Much😭😂Watch Streamhouse LA on CWETV",
+      "source_url": "https://www.youtube.com/watch?v=FTEt7LEyKlM",
+      "created": "2026-11-13T07:56:50Z"
+    }
+  },
   "campaign": {
     "id": "5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
     "title": "Stream House LA Clipping| $4k Budget",
     "url": "https://contentrewards.com/discover/5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
     "cpm": 2.0,
-    "budget_left": 2930.5299999999997,
+    "budget_left": 2862.04,
     "platforms": [
       "instagram",
       "tiktok",
