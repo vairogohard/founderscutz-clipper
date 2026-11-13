@@ -50,15 +50,25 @@ def list_videos(url, limit=8):
     return videos
 
 
-def pick_new_video(sources, processed, min_minutes=6):
-    """Eerste nog niet verwerkte lange video uit de bronnen."""
+SINGLE_VIDEO = ("youtube.com/watch", "youtu.be/", "drive.google.com/file/")
+
+
+def pick_new_video(sources, processed, min_minutes=6, single_min_seconds=45):
+    """Eerste nog niet verwerkte video uit de bronnen.
+
+    Bij een kanaal of playlist slaan we korte video's over (dat zijn vaak Shorts). Een losse video
+    die de campagne zelf aanwijst, mag kort zijn. Overgeslagen video's komen met reden in de lijst."""
     errors = []
     for src in sources:
+        single = any(x in src for x in SINGLE_VIDEO)
+        limit = single_min_seconds if single else min_minutes * 60
         try:
             for v in list_videos(src):
                 if v["id"] in processed:
                     continue
-                if v["duration"] is not None and v["duration"] < min_minutes * 60:
+                if v["duration"] is not None and v["duration"] < limit:
+                    d = int(v["duration"])
+                    errors.append(f"overgeslagen, te kort ({d // 60}:{d % 60:02d}): {v['title'][:50] or v['id']}")
                     continue
                 return v, errors
         except Exception as e:  # noqa: BLE001 - we willen door naar de volgende bron

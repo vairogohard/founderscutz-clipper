@@ -26,8 +26,27 @@ def main():
                         "de playlist of de video van je campagne>")
         return 0
 
-    video, errors = sources.pick_new_video(srcs, set(state["processed"]))
-    if video is None and errors and all(sources.is_cookie_error(e) for e in errors):
+    n = int(cfg["clips_per_day"])
+    sent_total, notes, tried = 0, [], 0
+    errors = []
+    while sent_total < n and tried < 6:
+        video, errors = sources.pick_new_video(srcs, set(state["processed"]))
+        if video is None:
+            break
+        tried += 1
+        sent, note = process_video(video, n - sent_total, cfg, state)
+        sent_total += sent
+        if note:
+            notes.append(note)
+        state["processed"].append(video["id"])
+        state["processed"] = state["processed"][-500:]
+        save_state(state)
+
+    if sent_total:
+        for note in dict.fromkeys(notes):
+            tg.send_message(note)
+        return 0
+    if errors and all(sources.is_cookie_error(e) for e in errors):
         has = bool(os.environ.get("YTDLP_COOKIES"))
         tg.send_message(
             ("YouTube weigert de download: je YouTube-cookies zijn verlopen." if has else
@@ -38,32 +57,32 @@ def main():
             "3. Exporteer de cookies met 'Get cookies.txt LOCALLY' en sluit het incognitovenster meteen.\n"
             "4. Typ in de VS Code-terminal van je clipper: bash tools/cookies.sh en sleep het cookiebestand erin.")
         return 0
-    if video is None:
-        msg = "Geen nieuwe video gevonden bij je bronnen, dus vandaag geen nieuwe clips."
-        if errors:
-            msg += "\n\nFouten bij het ophalen:\n" + "\n".join(errors)
-        tg.send_message(msg)
-        return 0
+    msg = ("Ik heb video's verwerkt maar er kwamen geen bruikbare clips uit." if tried else
+           "Geen nieuwe video gevonden bij je bronnen, dus vandaag geen nieuwe clips.")
+    if errors:
+        msg += "\n\nDetails:\n" + "\n".join(errors[:12])
+    tg.send_message(msg)
+    return 0
 
+
+def process_video(video, want, cfg, state):
+    """Eén bronvideo downloaden en er maximaal `want` clips uit naar Telegram sturen.
+    Geeft (aantal verstuurd, opmerking) terug."""
     shutil.rmtree(WORK, ignore_errors=True)
     OUT.mkdir(parents=True, exist_ok=True)
     print("Video:", video["title"], video["url"])
-    src, info = sources.download(video, WORK)
+    try:
+        src, info = sources.download(video, WORK)
+    except Exception as e:  # noqa: BLE001
+        return 0, f"Downloaden van '{video['title'][:60]}' mislukt: {str(e)[:250]}"
     words = transcribe.transcribe(src, WORK, cfg["whisper_model"], cfg["max_source_minutes"])
-    if len(words) < 150:
-        state["processed"].append(video["id"])
-        save_state(state)
-        tg.send_message(f"Te weinig spraak gevonden in '{info['title']}', overgeslagen.")
-        return 0
+    if len(words) < 50:
+        return 0, f"Te weinig spraak in '{info['title'][:60]}', overgeslagen."
 
-    n = int(cfg["clips_per_day"])
-    clips, note = pick.pick_clips(words, n, cfg["clip_seconds"]["min"], cfg["clip_seconds"]["max"],
+    clips, note = pick.pick_clips(words, want, cfg["clip_seconds"]["min"], cfg["clip_seconds"]["max"],
                                   cfg["gemini_models"])
     if not clips:
-        state["processed"].append(video["id"])
-        save_state(state)
-        tg.send_message(f"Geen geschikte momenten gevonden in '{info['title']}'.")
-        return 0
+        return 0, None
 
     stamp = datetime.now().strftime("%y%m%d")
     sent = 0
@@ -73,7 +92,7 @@ def main():
         try:
             dur = render.render_clip(src, words, c["first"], c["last"], c["title"], out,
                                      WORK / f"clip{i}", cfg["accent_color"])
-            caption = (f"{i}/{len(clips)}  {c['title']}\n"
+            caption = (f"{c['title']}\n"
                        f"{dur:.0f} sec, uit: {info['title'][:80]}\n\n"
                        "Tik op Plaatsen of Weggooien.")
             message = tg.send_clip(out, caption, clip_id)
@@ -90,18 +109,7 @@ def main():
         }
         sent += 1
         save_state(state)
-
-    state["processed"].append(video["id"])
-    state["processed"] = state["processed"][-500:]
-    save_state(state)
-    if sent == 0:
-        tg.send_message(f"Het maken van de clips uit '{info['title']}' is mislukt. Kijk in GitHub "
-                        "onder Actions voor de foutmelding.")
-        return 1
-    if note:
-        tg.send_message(note)
-    return 0
-
+    return sent, note
 
 if __name__ == "__main__":
     try:
