@@ -110,7 +110,13 @@ def process_video(video, want, cfg, state):
         src, info = sources.download(video, WORK)
     except Exception as e:  # noqa: BLE001
         return 0, f"Downloaden van '{video['title'][:60]}' mislukt: {str(e)[:250]}"
-    words = transcribe.transcribe(src, WORK, cfg["whisper_model"], cfg["max_source_minutes"])
+    try:
+        words = transcribe.transcribe(src, WORK, cfg["whisper_model"], cfg["max_source_minutes"])
+    except Exception as e:  # noqa: BLE001 - zonder ondertitels kan een korte video nog steeds mee
+        traceback.print_exc()
+        if not video.get("short"):
+            return 0, f"Spraakherkenning mislukt bij '{video['title'][:60]}': {str(e)[:200]}"
+        words = []
     if video.get("short"):
         return repost_short(video, src, info, words, cfg, state)
     if len(words) < 50:

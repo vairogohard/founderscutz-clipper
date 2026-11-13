@@ -104,6 +104,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     return head + "\n".join(lines) + "\n"
 
 
+def has_audio(path):
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index",
+                        "-of", "csv=p=0", str(path)], capture_output=True, text=True)
+    return bool(r.stdout.strip())
+
+
 def _render(src, start, length, segments, cwords, title, out_path, workdir, accent):
     workdir = Path(workdir)
     workdir.mkdir(parents=True, exist_ok=True)
@@ -126,10 +132,11 @@ def _render(src, start, length, segments, cwords, title, out_path, workdir, acce
         "boxblur=24:2,eq=brightness=-0.22[bg];"
         "[b]crop='min(iw,ih*4/3)':ih,scale=1080:-2[fg];"
         "[bg][fg]overlay=(W-w)/2:(H-h)/2,ass=subs.ass:fontsdir=fonts,format=yuv420p[v];"
-        f"[0:a]{acut}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100[au]"
+        f"[{'0' if has_audio(src) else '1'}:a]{acut}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100[au]"
     )
+    silent = [] if has_audio(src) else ["-f", "lavfi", "-t", f"{length:.3f}", "-i", "anullsrc=r=44100:cl=mono"]
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.3f}", "-t", f"{length:.3f}",
-           "-i", str(Path(src).resolve()), "-filter_complex", graph, "-map", "[v]", "-map", "[au]",
+           "-i", str(Path(src).resolve()), *silent, "-filter_complex", graph, "-map", "[v]", "-map", "[au]",
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-maxrate", "3500k",
            "-bufsize", "7000k", "-profile:v", "high", "-pix_fmt", "yuv420p",
            "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
