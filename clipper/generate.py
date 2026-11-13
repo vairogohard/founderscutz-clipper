@@ -1,5 +1,6 @@
 """Nachtelijke taak: nieuwe bronvideo ophalen, clips maken en ter controle naar Telegram sturen."""
 import os
+import re
 import shutil
 import sys
 import traceback
@@ -29,7 +30,7 @@ def main():
     n = int(cfg["clips_per_day"])
     sent_total, notes, tried = 0, [], 0
     errors = []
-    while sent_total < n and tried < 6:
+    while sent_total < n and tried < n + 4:
         video, errors = sources.pick_new_video(srcs, set(state["processed"]))
         if video is None:
             break
@@ -65,6 +66,40 @@ def main():
     return 0
 
 
+def hook_from_title(title):
+    """Titel van een korte video omzetten naar een nette hooktekst (zonder emoji's)."""
+    before = re.split(r"[\U0001F000-\U0001FFFF\u2600-\u27BF#|]", title)[0]
+    if len(before.split()) >= 3:          # tekst na emoji's of hashtags is meestal rommel ("W", "Watch")
+        title = before
+    clean = re.sub(r"[^\w\s'’?!.,&%$-]", " ", title)
+    clean = re.sub(r"\s+", " ", clean).strip(" -,.")
+    words = clean.split()
+    return " ".join(words[:9]) + ("..." if len(words) > 9 else "") or "Wait for it"
+
+
+def repost_short(video, src, info, words, cfg, state):
+    """Een korte campagnevideo in zijn geheel als clip, met hooktitel en ondertitels."""
+    stamp = datetime.now().strftime("%y%m%d")
+    clip_id = f"{stamp}-{video['id'][:8]}-1"
+    out = OUT / f"{clip_id}.mp4"
+    title = hook_from_title(info["title"] or video["title"])
+    try:
+        dur = render.render_full(src, words, title, out, WORK / "full", cfg["accent_color"])
+        message = tg.send_clip(out, f"{title}\n{dur:.0f} sec, hele video van de campagne\n\n"
+                                    "Tik op Plaatsen of Weggooien.", clip_id)
+    except Exception as e:  # noqa: BLE001
+        traceback.print_exc()
+        out.unlink(missing_ok=True)
+        return 0, f"Clip van '{title}' maken mislukt: {str(e)[:200]}"
+    state["clips"][clip_id] = {
+        "status": "pending", "title": title, "caption": title, "file": out.name,
+        "message_id": message["message_id"], "source_title": info["title"], "source_url": video["url"],
+        "created": now_utc().strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    save_state(state)
+    return 1, None
+
+
 def process_video(video, want, cfg, state):
     """Eén bronvideo downloaden en er maximaal `want` clips uit naar Telegram sturen.
     Geeft (aantal verstuurd, opmerking) terug."""
@@ -76,6 +111,8 @@ def process_video(video, want, cfg, state):
     except Exception as e:  # noqa: BLE001
         return 0, f"Downloaden van '{video['title'][:60]}' mislukt: {str(e)[:250]}"
     words = transcribe.transcribe(src, WORK, cfg["whisper_model"], cfg["max_source_minutes"])
+    if video.get("short"):
+        return repost_short(video, src, info, words, cfg, state)
     if len(words) < 50:
         return 0, f"Te weinig spraak in '{info['title'][:60]}', overgeslagen."
 

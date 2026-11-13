@@ -53,11 +53,15 @@ def list_videos(url, limit=8):
 SINGLE_VIDEO = ("youtube.com/watch", "youtu.be/", "drive.google.com/file/")
 
 
-def pick_new_video(sources, processed, min_minutes=6, single_min_seconds=45):
+SHORT_SECONDS = 75     # korter dan dit: de video is zelf al een clip en gaat in zijn geheel mee
+
+
+def pick_new_video(sources, processed, min_minutes=6, single_min_seconds=4):
     """Eerste nog niet verwerkte video uit de bronnen.
 
-    Bij een kanaal of playlist slaan we korte video's over (dat zijn vaak Shorts). Een losse video
-    die de campagne zelf aanwijst, mag kort zijn. Overgeslagen video's komen met reden in de lijst."""
+    Bij een kanaal of playlist slaan we korte video's over (dat zijn vaak Shorts van anderen). Een
+    losse video die de campagne zelf aanwijst, mag kort zijn: die wordt dan in zijn geheel een clip.
+    Overgeslagen video's komen met reden in de lijst."""
     errors = []
     for src in sources:
         single = any(x in src for x in SINGLE_VIDEO)
@@ -70,6 +74,7 @@ def pick_new_video(sources, processed, min_minutes=6, single_min_seconds=45):
                     d = int(v["duration"])
                     errors.append(f"overgeslagen, te kort ({d // 60}:{d % 60:02d}): {v['title'][:50] or v['id']}")
                     continue
+                v["short"] = single and v["duration"] is not None and v["duration"] <= SHORT_SECONDS
                 return v, errors
         except Exception as e:  # noqa: BLE001 - we willen door naar de volgende bron
             errors.append(f"{src}: {str(e)[:200]}")

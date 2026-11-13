@@ -104,14 +104,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     return head + "\n".join(lines) + "\n"
 
 
-def render_clip(src, words, first, last, title, out_path, workdir, accent="C6FF3D"):
-    """Rendert de clip en geeft de lengte in seconden terug."""
+def _render(src, start, length, segments, cwords, title, out_path, workdir, accent):
     workdir = Path(workdir)
     workdir.mkdir(parents=True, exist_ok=True)
-    cs, segments, cwords = plan_segments(words, first, last)
-    raw_len = segments[-1][1]
     duration = sum(e - s for s, e in segments)
-
     (workdir / "subs.ass").write_text(build_ass(cwords, title, duration, accent), encoding="utf-8")
     fonts = workdir / "fonts"
     if not fonts.exists():
@@ -132,7 +128,7 @@ def render_clip(src, words, first, last, title, out_path, workdir, accent="C6FF3
         "[bg][fg]overlay=(W-w)/2:(H-h)/2,ass=subs.ass:fontsdir=fonts,format=yuv420p[v];"
         f"[0:a]{acut}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100[au]"
     )
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{cs:.3f}", "-t", f"{raw_len:.3f}",
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.3f}", "-t", f"{length:.3f}",
            "-i", str(Path(src).resolve()), "-filter_complex", graph, "-map", "[v]", "-map", "[au]",
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-maxrate", "3500k",
            "-bufsize", "7000k", "-profile:v", "high", "-pix_fmt", "yuv420p",
@@ -140,3 +136,21 @@ def render_clip(src, words, first, last, title, out_path, workdir, accent="C6FF3
            str(Path(out_path).resolve())]
     subprocess.run(cmd, check=True, cwd=workdir)
     return duration
+
+
+def render_clip(src, words, first, last, title, out_path, workdir, accent="C6FF3D"):
+    """Een fragment uit een lange video. Geeft de lengte in seconden terug."""
+    cs, segments, cwords = plan_segments(words, first, last)
+    return _render(src, cs, segments[-1][1], segments, cwords, title, out_path, workdir, accent)
+
+
+def media_duration(path):
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                        str(path)], capture_output=True, text=True, check=True)
+    return float(r.stdout.strip())
+
+
+def render_full(src, words, title, out_path, workdir, accent="C6FF3D"):
+    """Een korte video in zijn geheel, in jouw stijl (9:16, hooktitel, ondertitels)."""
+    dur = media_duration(src)
+    return _render(src, 0.0, dur, [(0.0, dur)], words, title, out_path, workdir, accent)
