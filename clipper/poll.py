@@ -8,6 +8,8 @@ from . import buffer_api, campaigns, tg
 from .common import fmt_local, load_config, load_state, next_slot, pages_base_url, save_state
 
 HELP = ("Opdrachten:\n"
+        "/plaats  alle wachtende clips inplannen\n"
+        "/weg  alle wachtende clips weggooien\n"
         "/zoek  nu de beste campagne zoeken\n"
         "/debug  velden van de gekozen campagne tonen (voor Claude)\n"
         "/campagne  huidige campagne en alternatieven tonen\n"
@@ -138,6 +140,23 @@ def handle_message(msg, state, cfg):
     elif cmd == "/tekst":
         state["campaign_text"] = arg
         tg.send_message("Campagnetekst opgeslagen." if arg else "Campagnetekst leeggemaakt.")
+    elif cmd in ("/plaats", "/weg"):
+        pending = [(cid, c) for cid, c in state["clips"].items() if c["status"] == "pending"]
+        if not pending:
+            tg.send_message(f"Er wachten geen clips op jouw keuze ({len(state['clips'])} clips in totaal bekend).")
+        for cid, c in pending:
+            if cmd == "/weg":
+                c["status"] = "rejected"
+                tg.edit_caption(c["message_id"], f"❌ Weggegooid\n{c['title']}")
+                continue
+            try:
+                text = approve(cid, c, state, cfg)
+                tg.edit_caption(c["message_id"], text)
+                tg.send_message(text)
+            except Exception as e:  # noqa: BLE001
+                tg.send_message(f"'{c['title']}' kon niet worden ingepland:\n{str(e)[:700]}")
+        if cmd == "/weg" and pending:
+            tg.send_message(f"{len(pending)} clip(s) weggegooid.")
     elif cmd == "/status":
         clips = state["clips"].values()
         pending = sum(1 for c in clips if c["status"] == "pending")
@@ -158,6 +177,8 @@ def main():
     owner = str(tg.chat_id())
     for up in updates:
         state["tg_offset"] = up["update_id"] + 1
+        print("update:", ", ".join(k for k in up if k != "update_id"),
+              (up.get("message") or {}).get("text", "") or (up.get("callback_query") or {}).get("data", ""))
         try:
             if "callback_query" in up:
                 cb = up["callback_query"]
