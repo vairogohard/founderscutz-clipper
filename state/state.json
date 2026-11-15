@@ -6,7 +6,10 @@
     "QxzpjqKXH-A",
     "FTEt7LEyKlM",
     "-QUKueAVF48",
-    "-ofvCW3kzK8"
+    "-ofvCW3kzK8",
+    "_9KIqtJY_5k",
+    "beXfNot8UWw",
+    "4Y1v6sgVC-0"
   ],
   "sources": [
     "https://www.youtube.com/watch?v=_9KIqtJY_5k",
@@ -104,6 +107,36 @@
         "instagram": "6af7a48a4b28296eb122bb6c"
       },
       "due": "2026-11-14T11:00:00.000Z"
+    },
+    "261115-_9KIqtJY-1": {
+      "status": "pending",
+      "title": "Inkognito-Modus? Meta trackt dich TROTZDEM",
+      "caption": "Inkognito-Modus? Meta trackt dich TROTZDEM",
+      "file": "261115-_9KIqtJY-1.mp4",
+      "message_id": 52,
+      "source_title": "Inkognito-Modus? Meta trackt dich TROTZDEM 👀 #datenschutz",
+      "source_url": "https://www.youtube.com/watch?v=_9KIqtJY_5k",
+      "created": "2026-11-15T10:15:12Z"
+    },
+    "261115-beXfNot8-1": {
+      "status": "pending",
+      "title": "germany datenschutz meta unternehmer ytshorts podcast fyp tranding podcastclips",
+      "caption": "germany datenschutz meta unternehmer ytshorts podcast fyp tranding podcastclips",
+      "file": "261115-beXfNot8-1.mp4",
+      "message_id": 53,
+      "source_title": "#germany #datenschutz #meta #unternehmer#ytshorts #podcast#fyp #tranding#podcastclips",
+      "source_url": "https://www.youtube.com/watch?v=beXfNot8UWw",
+      "created": "2026-11-15T10:16:06Z"
+    },
+    "261115-4Y1v6sgV-1": {
+      "status": "pending",
+      "title": "10 Mio. Detektive verfolgen dich?",
+      "caption": "10 Mio. Detektive verfolgen dich?",
+      "file": "261115-4Y1v6sgV-1.mp4",
+      "message_id": 54,
+      "source_title": "10 Mio. Detektive verfolgen dich? 🕵️ So arbeitet Meta",
+      "source_url": "https://www.youtube.com/watch?v=4Y1v6sgVC-0",
+      "created": "2026-11-15T10:16:55Z"
     }
   },
   "campaign": {
@@ -111,7 +144,7 @@
     "title": "META-KLAGE | $5,000 Budget | $2 CPM",
     "url": "https://contentrewards.com/discover/7b094e71-4021-4c56-95ad-e1c0c3cd7f1a",
     "cpm": 2.0,
-    "budget_left": 3879.95,
+    "budget_left": 3879.94,
     "platforms": [
       "instagram",
       "tiktok",
