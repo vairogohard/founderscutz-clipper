@@ -1,5 +1,5 @@
 {
-  "tg_offset": 277151668,
+  "tg_offset": 277151676,
   "processed": [
     "5sfuMvtxiLg",
     "ysPOGQmqm-E",
@@ -119,24 +119,34 @@
       "created": "2026-11-15T10:15:12Z"
     },
     "261115-beXfNot8-1": {
-      "status": "pending",
+      "status": "scheduled",
       "title": "germany datenschutz meta unternehmer ytshorts podcast fyp tranding podcastclips",
       "caption": "germany datenschutz meta unternehmer ytshorts podcast fyp tranding podcastclips",
       "file": "261115-beXfNot8-1.mp4",
       "message_id": 53,
       "source_title": "#germany #datenschutz #meta #unternehmer#ytshorts #podcast#fyp #tranding#podcastclips",
       "source_url": "https://www.youtube.com/watch?v=beXfNot8UWw",
-      "created": "2026-11-15T10:16:06Z"
+      "created": "2026-11-15T10:16:06Z",
+      "posts": {
+        "youtube": "6afb91e085dca6b14a08178f",
+        "instagram": "6afb91e0df36f4d825550607"
+      },
+      "due": "2026-11-17T16:00:00.000Z"
     },
     "261115-4Y1v6sgV-1": {
-      "status": "pending",
+      "status": "scheduled",
       "title": "10 Mio. Detektive verfolgen dich?",
       "caption": "10 Mio. Detektive verfolgen dich?",
       "file": "261115-4Y1v6sgV-1.mp4",
       "message_id": 54,
       "source_title": "10 Mio. Detektive verfolgen dich? 🕵️ So arbeitet Meta",
       "source_url": "https://www.youtube.com/watch?v=4Y1v6sgVC-0",
-      "created": "2026-11-15T10:16:55Z"
+      "created": "2026-11-15T10:16:55Z",
+      "posts": {
+        "youtube": "6afb91dd797935b975c9686d",
+        "instagram": "6afb91dedf36f4d82555038f"
+      },
+      "due": "2026-11-17T11:00:00.000Z"
     }
   },
   "campaign": {
