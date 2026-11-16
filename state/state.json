@@ -1,5 +1,5 @@
 {
-  "tg_offset": 277151676,
+  "tg_offset": 277151683,
   "processed": [
     "5sfuMvtxiLg",
     "ysPOGQmqm-E",
@@ -109,14 +109,19 @@
       "due": "2026-11-14T11:00:00.000Z"
     },
     "261115-_9KIqtJY-1": {
-      "status": "pending",
+      "status": "scheduled",
       "title": "Inkognito-Modus? Meta trackt dich TROTZDEM",
       "caption": "Inkognito-Modus? Meta trackt dich TROTZDEM",
       "file": "261115-_9KIqtJY-1.mp4",
       "message_id": 52,
       "source_title": "Inkognito-Modus? Meta trackt dich TROTZDEM 👀 #datenschutz",
       "source_url": "https://www.youtube.com/watch?v=_9KIqtJY_5k",
-      "created": "2026-11-15T10:15:12Z"
+      "created": "2026-11-15T10:15:12Z",
+      "posts": {
+        "youtube": "6afb92024b26315855a92946",
+        "instagram": "6afb92033e42cd001e3a1947"
+      },
+      "due": "2026-11-17T19:00:00.000Z"
     },
     "261115-beXfNot8-1": {
       "status": "scheduled",
