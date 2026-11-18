@@ -1,5 +1,5 @@
 {
-  "tg_offset": 277151683,
+  "tg_offset": 277151684,
   "processed": [
     "5sfuMvtxiLg",
     "ysPOGQmqm-E",
@@ -12,9 +12,7 @@
     "4Y1v6sgVC-0"
   ],
   "sources": [
-    "https://www.youtube.com/watch?v=_9KIqtJY_5k",
-    "https://www.youtube.com/watch?v=beXfNot8UWw",
-    "https://www.youtube.com/watch?v=4Y1v6sgVC-0"
+    "https://www.youtube.com/watch?v=6uSskUaDL90"
   ],
   "campaign_text": "",
   "clips": {
@@ -155,28 +153,28 @@
     }
   },
   "campaign": {
-    "id": "7b094e71-4021-4c56-95ad-e1c0c3cd7f1a",
-    "title": "META-KLAGE | $5,000 Budget | $2 CPM",
-    "url": "https://contentrewards.com/discover/7b094e71-4021-4c56-95ad-e1c0c3cd7f1a",
+    "id": "cc01471a-0dd5-471d-95b7-90955b037974",
+    "title": "$$20,000+ Social Media Justice Clipping Campaign",
+    "url": "https://contentrewards.com/discover/cc01471a-0dd5-471d-95b7-90955b037974",
     "cpm": 2.0,
-    "budget_left": 3879.94,
+    "budget_left": 19818.54,
     "platforms": [
       "instagram",
       "tiktok",
       "youtube"
     ],
-    "chosen": "2026-11-15T02:04:10Z"
+    "chosen": "2026-11-18T09:48:43Z"
   },
   "campaign_options": [
     {
-      "id": "7b094e71-4021-4c56-95ad-e1c0c3cd7f1a",
-      "title": "META-KLAGE | $5,000 Budget | $2 CPM",
-      "url": "https://contentrewards.com/discover/7b094e71-4021-4c56-95ad-e1c0c3cd7f1a",
+      "id": "cc01471a-0dd5-471d-95b7-90955b037974",
+      "title": "$$20,000+ Social Media Justice Clipping Campaign",
+      "url": "https://contentrewards.com/discover/cc01471a-0dd5-471d-95b7-90955b037974",
       "cpm": 2.0,
-      "budget_total": 5000.0,
-      "budget_left": 3879.95,
-      "progress": 22.4,
-      "creators": 43.0,
+      "budget_total": 20833.0,
+      "budget_left": 19818.54,
+      "progress": 4.86,
+      "creators": 8.0,
       "platforms": [
         "instagram",
         "tiktok",
@@ -184,30 +182,33 @@
       ],
       "type": "",
       "status": "",
-      "category": "Politics",
+      "category": "Podcasts",
       "requires_application": false,
-      "description": "Facebook and Instagram tracked users across Germany for years, and German courts have started ruling in their favor. Meta-Klage checks for free if you’re owed compensation.",
-      "youtube": [],
+      "description": "Get paid to clip/convey the message of social media addiction, sourced from AJ’s Social Media Justice video. Supporting footage (movies, YouTube and similar) is allowed.\\n\\nhttps://www.youtube.com/watch?v=6uSskUaDL90\\nhttps://socialmediajusticereview.com/",
+      "youtube": [
+        "https://www.youtube.com/watch?v=6uSskUaDL90"
+      ],
       "links": [
-        "https://crusercontent.com/organizations/816e910b-577e-5326-8773-c0e763b7f48d/logo/816e910b-577e-5326-8773-c0e763b7f48d.00f1c91dcb.png",
-        "https://crusercontent.com/816e910b-577e-5326-8773-c0e763b7f48d/campaigns/thumbnails/eca0eac3-43ba-47ae-901c-bbcffd0731a3.webp"
+        "https://www.youtube.com/watch?v=6uSskUaDL90",
+        "https://socialmediajusticereview.com/",
+        "https://crusercontent.com/organizations/fe520411-733d-5812-a383-b56f9575d049/logo/fe520411-733d-5812-a383-b56f9575d049.05c048630f.png",
+        "https://crusercontent.com/fe520411-733d-5812-a383-b56f9575d049/campaigns/thumbnails/e63f0221-5713-4c7a-a2fb-7339c71d105f.webp"
       ],
       "sources": [
-        "https://www.youtube.com/watch?v=_9KIqtJY_5k",
-        "https://www.youtube.com/watch?v=beXfNot8UWw",
-        "https://www.youtube.com/watch?v=4Y1v6sgVC-0"
+        "https://www.youtube.com/watch?v=6uSskUaDL90"
       ]
     },
     {
-      "id": "5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
-      "title": "Stream House LA Clipping| $4k Budget",
-      "url": "https://contentrewards.com/discover/5f6b6ac5-9878-4ad6-b90f-c2f2a3392e91",
-      "cpm": 2.0,
-      "budget_total": 4000.0,
-      "budget_left": 2693.73,
-      "progress": 32.65,
-      "creators": 65.0,
+      "id": "373e9c40-dfc5-4a6d-bab8-6c2f96dda100",
+      "title": "The Loaded Tea Shop",
+      "url": "https://contentrewards.com/discover/373e9c40-dfc5-4a6d-bab8-6c2f96dda100",
+      "cpm": 1.0,
+      "budget_total": 150000.0,
+      "budget_left": 144655.42,
+      "progress": 3.56,
+      "creators": 105.0,
       "platforms": [
+        "facebook",
         "instagram",
         "tiktok",
         "youtube"
@@ -216,19 +217,54 @@
       "status": "",
       "category": "Entertainment",
       "requires_application": false,
-      "description": "Clip for Stream House LA and post viral moments across Tiktok, Instagram and YT shorts and get paid ",
+      "description": "The Loaded Tea Shop makes loaded tea drinks. Make short clips of Michael Jackson moments. Use only our footage. Add the watermark. You earn money for every view.",
       "youtube": [],
       "links": [
-        "https://crusercontent.com/organizations/c8ebd942-fbb1-51c3-91c7-09ed9f9742af/logo/c8ebd942-fbb1-51c3-91c7-09ed9f9742af.871ffb66f8.jpg",
-        "https://crusercontent.com/c8ebd942-fbb1-51c3-91c7-09ed9f9742af/campaigns/thumbnails/be69e906-5637-40d9-bd34-5810e901d3c5.webp"
+        "https://crusercontent.com/organizations/07f11898-4a1a-5b98-a340-ca5b8b7d83ba/logo/07f11898-4a1a-5b98-a340-ca5b8b7d83ba.f54412cc33.png",
+        "https://crusercontent.com/organizations/07f11898-4a1a-5b98-a340-ca5b8b7d83ba/campaign-groups/covers/eb532014-f7b1-4bec-9a1e-39e3dc0e3479.webp"
       ],
       "sources": [
-        "https://www.youtube.com/watch?v=5sfuMvtxiLg",
-        "https://www.youtube.com/watch?v=ysPOGQmqm-E",
-        "https://www.youtube.com/watch?v=QxzpjqKXH-A",
-        "https://www.youtube.com/watch?v=FTEt7LEyKlM",
-        "https://www.youtube.com/watch?v=-ofvCW3kzK8",
-        "https://www.youtube.com/watch?v=2sWscoXth5U"
+        "https://www.youtube.com/watch?v=Io6RE_DMcRg"
+      ]
+    },
+    {
+      "id": "afeca1a0-f44c-46ad-8194-09d62b56589e",
+      "title": "$$8,000 Expedia x IShowSpeed Campaign",
+      "url": "https://contentrewards.com/discover/afeca1a0-f44c-46ad-8194-09d62b56589e",
+      "cpm": 1.0,
+      "budget_total": 8000.0,
+      "budget_left": 7462.4,
+      "progress": 6.72,
+      "creators": 20.0,
+      "platforms": [
+        "instagram",
+        "tiktok",
+        "youtube"
+      ],
+      "type": "",
+      "status": "",
+      "category": "Streamer",
+      "requires_application": false,
+      "description": "Content must be from IShowSpeed's Stream 11.6.26.\\nContent sourced from other Streams, Videos, and posts WILL BE REJECTED.\\n\\nFOOTAGE is listed below, under \\\"Reference Materials.\\\" Any footage from 2:56:29 until the end of stream is acceptable.\\n\\nhttps://www.youtube.com/@IShowSpeed",
+      "youtube": [
+        "https://www.youtube.com/@IShowSpeed"
+      ],
+      "links": [
+        "https://www.youtube.com/@IShowSpeed",
+        "https://crusercontent.com/organizations/fe520411-733d-5812-a383-b56f9575d049/logo/fe520411-733d-5812-a383-b56f9575d049.05c048630f.png",
+        "https://crusercontent.com/fe520411-733d-5812-a383-b56f9575d049/campaigns/thumbnails/33b57a0c-ccb0-4f7e-8b07-0b4f23f0e666.webp"
+      ],
+      "sources": [
+        "https://www.youtube.com/@IShowSpeed",
+        "https://www.youtube.com/watch?v=nCQD8Y-9bQ0",
+        "https://www.youtube.com/watch?v=oj3yNPt2L88",
+        "https://www.youtube.com/watch?v=X4339dJJqw0",
+        "https://www.youtube.com/watch?v=80yHe1Ebu5w",
+        "https://www.youtube.com/watch?v=hOgp4T6cGjE",
+        "https://www.youtube.com/watch?v=TAXWsrYCKxw",
+        "https://www.youtube.com/watch?v=4RTKQ8pDdM4",
+        "https://www.youtube.com/watch?v=oQu_0v95Hyo",
+        "https://www.youtube.com/watch?v=yFry2sq3wYw"
       ]
     }
   ],
